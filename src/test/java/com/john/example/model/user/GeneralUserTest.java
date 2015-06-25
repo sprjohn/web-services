@@ -1,6 +1,5 @@
 package com.john.example.model.user;
 
-import org.junit.Before;
 import org.junit.Test;
 
 /**

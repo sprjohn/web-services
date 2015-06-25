@@ -4,13 +4,16 @@ import com.john.example.annotations.Author;
 import com.john.example.dao.UserDao;
 import com.john.example.exceptions.UserNotFoundException;
 import com.john.example.manager.UserManager;
-import com.john.example.model.user.GeneralUser;
+import com.john.example.model.user.User;
+import com.john.example.model.user.UserJaxbBean;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Author(
         author="John Sprinkle",
@@ -30,22 +33,40 @@ public class UserResource {
     @GET
     @Path("{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public GeneralUser getUserJSON(@PathParam("userId") final String userId) {
-        try {
-            return (GeneralUser) userManager.getUserByUserId(userId);
-        } catch (UserNotFoundException e) {
-            return null;
+    public UserJaxbBean getUserAsJSON(@PathParam("userId") final String userId) {
+        return new UserJaxbBean(userManager.getUserByUserId(userId));
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UserJaxbBean> getUsersAsJSON() {
+        final List<User> users = userManager.getAllUsers();
+        final List<UserJaxbBean> jaxbUsers = new ArrayList<>(users.size());
+
+        for (final User user : users) {
+            jaxbUsers.add(new UserJaxbBean(user));
         }
+
+        return jaxbUsers;
     }
 
     @GET
     @Path("{userId}")
     @Produces(MediaType.APPLICATION_XML)
-    public GeneralUser getUserXml(@PathParam("userId") final String userId) {
+    public UserJaxbBean getUserAsXml(@PathParam("userId") final String userId) {
         try {
-            return (GeneralUser) userManager.getUserByUserId(userId);
+            return new UserJaxbBean(userManager.getUserByUserId(userId));
         } catch (UserNotFoundException e) {
             return null;
         }
+    }
+
+    @POST
+    @Path("create")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response createUser(final UserJaxbBean newUserContent) throws URISyntaxException {
+        final User user = userManager.createUser(newUserContent);
+        final URI userURI = new URI("/users/" + user.getUserId());
+        return Response.created(userURI).build();
     }
 }

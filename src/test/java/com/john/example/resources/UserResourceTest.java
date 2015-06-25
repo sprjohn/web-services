@@ -8,8 +8,10 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,6 +49,13 @@ public class UserResourceTest {
     public void shouldReturnErrorMessageForNonexistentUser() {
         final WebTarget webTarget = target.path("users/456");
         final String responseMsg = webTarget.request().header("Accept", MediaType.APPLICATION_JSON).get(String.class);
+        assertEquals("User with id <456> not found", responseMsg);
+    }
+
+    @Test
+    public void foobar() {
+        final WebTarget webTarget = target.path("users/create");
+        final Response responseMsg = webTarget.request().header("Accept", MediaType.APPLICATION_JSON).post(Entity.entity("{}", MediaType.APPLICATION_JSON));
         assertEquals("User with id <456> not found", responseMsg);
     }
 }
