@@ -1,14 +1,17 @@
 package com.john.example.model.user;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import com.john.example.annotations.Author;
+import com.john.example.model.discoverable.Resource;
 
-/**
- * Created by john on 6/25/15.
- */
+import javax.xml.bind.annotation.*;
+import java.util.List;
+
+@Author(
+        author="John Sprinkle",
+        email="john.sprink@gmail.com")
 @XmlRootElement(name = "user")
-@XmlType(name = "user", propOrder = {"userId", "username", "status"})
+@XmlType(name = "user", propOrder = {"userId", "username", "status", "resources"})
+@XmlSeeAlso(Resource.class)
 public final class UserJaxbBean {
     @XmlElement(name = "userId")
     private Long userId;
@@ -16,6 +19,9 @@ public final class UserJaxbBean {
     private String username;
     @XmlElement(name = "status")
     private String status;
+    @XmlElementWrapper(name = "resources")
+    @XmlElement(name = "resource")
+    private List<Resource> resources;
 
     /**
      * Needed for JAXB
@@ -26,12 +32,14 @@ public final class UserJaxbBean {
         this.userId = user.getUserId();
         this.username = user.getUsername();
         this.status = user.getStatus();
+        this.resources = user.getResources();
     }
 
-    public UserJaxbBean(final Long userId, final String username, final String status) {
+    public UserJaxbBean(final Long userId, final String username, final String status, final List<Resource> resources) {
         this.userId = userId;
         this.username = username;
         this.status = status;
+        this.resources = resources;
     }
 
     public long getUserId() {
@@ -44,5 +52,9 @@ public final class UserJaxbBean {
 
     public String getStatus() {
         return status;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
     }
 }

@@ -2,7 +2,6 @@ package com.john.example.resources;
 
 import com.john.example.annotations.Author;
 import com.john.example.dao.UserDao;
-import com.john.example.exceptions.UserNotFoundException;
 import com.john.example.manager.UserManager;
 import com.john.example.model.user.User;
 import com.john.example.model.user.UserJaxbBean;
@@ -32,14 +31,14 @@ public class UserResource {
 
     @GET
     @Path("{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public UserJaxbBean getUserAsJSON(@PathParam("userId") final String userId) {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public UserJaxbBean getUser(@PathParam("userId") final String userId) {
         return new UserJaxbBean(userManager.getUserByUserId(userId));
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<UserJaxbBean> getUsersAsJSON() {
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<UserJaxbBean> getAllUsers() {
         final List<User> users = userManager.getAllUsers();
         final List<UserJaxbBean> jaxbUsers = new ArrayList<>(users.size());
 
@@ -48,17 +47,6 @@ public class UserResource {
         }
 
         return jaxbUsers;
-    }
-
-    @GET
-    @Path("{userId}")
-    @Produces(MediaType.APPLICATION_XML)
-    public UserJaxbBean getUserAsXml(@PathParam("userId") final String userId) {
-        try {
-            return new UserJaxbBean(userManager.getUserByUserId(userId));
-        } catch (UserNotFoundException e) {
-            return null;
-        }
     }
 
     @POST

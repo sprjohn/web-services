@@ -1,6 +1,7 @@
 package com.john.example.resources;
 
 import com.john.example.Main;
+import com.john.example.model.discoverable.Resource;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
 import org.junit.Before;
@@ -23,7 +24,7 @@ public class UserResourceTest {
     public void setUp() throws Exception {
         server = Main.startServer();
         final Client c = ClientBuilder.newClient();
-        target = c.target(Main.BASE_URI);
+        target = c.target(Resource.BASE_URI);
     }
 
     @After
